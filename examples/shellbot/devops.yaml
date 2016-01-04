@@ -1,0 +1,72 @@
+# contain the list of servers and how to connect to each of them
+servers:
+  # may import the list from another file relative to the main configuration file
+  import: servers.yaml
+
+  # the name of the first server using a ssh key connection
+  dev-1:
+    uri: docker@localhost:53404
+    key: ~/.docker/machine/machines/default/id_rsa
+
+  # the name of the second server using a user/pass connection
+  dev-2:
+    uri: root:hypriot@black-pearl.local
+
+# may contain a grouped list of commands
+tasks:
+  # name of the task group
+  nginx:
+    # list of actions that should be taken for this task group
+    - run: apt-get install nginx
+
+# contains one or multiple groups of servers and what should be executed for each one
+groups:
+  # groups can be imported from another file
+  import: groups.yaml
+
+  # the name of a group of servers
+  local:
+    # list the servers that should be included in the group
+    servers:
+      - dev-1
+      - dev-2
+
+    # list of tasks that should be executed on the servers
+    tasks:
+#      - task: nginx
+      - run: pwd
+      - run: cd ~;ls -all
+      # ENV variables or config variables from the executed environment can be used within any task command
+      - copy: ./Readme.md ${APP_DIR}/Readme.md
+      - run: cd ${APP_DIR}; ls -all
+      - download: ${APP_DIR}/Readme.md ./Readme_downloaded.md
+
+    # list of checks to be verified when executing the check command
+    checks:
+      - type: exists
+        file: ${APP_DIR}/devops.yaml
+
+      - type: service
+        service: nginx
+        state: running
+
+      - type: docker
+        container: api
+        state: running
+
+# define how your environments should look like
+environments:
+  # the production env should run with the live group and the specified variables
+  production:
+    groups:
+      - live
+    variables:
+      APP_DIR: /home/docker
+
+  # the development env should be based on the production env but with changes in the groups and variables
+  dev:
+#    extend: production
+    groups:
+      - local
+    variables:
+      APP_DIR: /home/docker
