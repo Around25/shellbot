@@ -1,6 +1,8 @@
 Shellbot
 ========
 
+[![Join the chat at https://gitter.im/Around25/shellbot](https://badges.gitter.im/Around25/shellbot.svg)](https://gitter.im/Around25/shellbot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Shellbot allows the user to connect to any server through ssh and setup a certain infrastructure configuration
 by running various commands on the remote server or by copying data from the host through SCP.
 
