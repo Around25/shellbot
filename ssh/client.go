@@ -4,20 +4,21 @@ import (
 	"fmt"
 	"io"
 	"os"
+
 	"golang.org/x/crypto/ssh"
 )
 
 /**
-	Client holds an active connection to a SSH server
- */
+Client holds an active connection to a SSH server
+*/
 type Client struct {
 	Config *Config
 	conn   *ssh.Client
 }
 
 /**
-	New creates a new client connection to the server specified by the configuration
- */
+New creates a new client connection to the server specified by the configuration
+*/
 func New(config *Config) (client *Client) {
 	client = &Client{
 		Config: config,
@@ -26,9 +27,9 @@ func New(config *Config) (client *Client) {
 }
 
 /**
-	Connect the client to the configured server
- */
-func (client *Client) Connect() (error) {
+Connect the client to the configured server
+*/
+func (client *Client) Connect() error {
 	config, err := client.Config.GetAuthConfig()
 	if err != nil {
 		return err
@@ -48,11 +49,11 @@ func (client *Client) Disconnect() {
 }
 
 /**
-    Connect to the server base on a client auth config
- */
+  Connect to the server base on a client auth config
+*/
 func (client *Client) StartSession(bindIOStreams bool, createPty bool) (*ssh.Session, error) {
 	// make sure the connection is available
-	if (client.conn == nil) {
+	if client.conn == nil {
 		err := client.Connect()
 		if err != nil {
 			return nil, err
@@ -65,16 +66,16 @@ func (client *Client) StartSession(bindIOStreams bool, createPty bool) (*ssh.Ses
 	}
 
 	// bind IO streams
-	if (bindIOStreams) {
+	if bindIOStreams {
 		session.Stdout = os.Stdout
 		session.Stderr = os.Stderr
 		session.Stdin = os.Stdin
 	}
 
 	// create PTY
-	if (createPty) {
+	if createPty {
 		modes := ssh.TerminalModes{
-			ssh.ECHO:          0, // disable echoing
+			ssh.ECHO:          0,     // disable echoing
 			ssh.TTY_OP_ISPEED: 14400, // input speed = 14.4kbaud
 			ssh.TTY_OP_OSPEED: 14400, // output speed = 14.4kbaud
 		}
@@ -89,8 +90,8 @@ func (client *Client) StartSession(bindIOStreams bool, createPty bool) (*ssh.Ses
 }
 
 /**
-	Try the connection to the server
- */
+Try the connection to the server
+*/
 func (client *Client) TryConnection() error {
 	err := client.Connect()
 	if err != nil {
@@ -100,9 +101,9 @@ func (client *Client) TryConnection() error {
 }
 
 /**
-    InitIOPipes binds session IO streams to the output
-    @Deprecated
- */
+  InitIOPipes binds session IO streams to the output
+  @Deprecated
+*/
 func (client *Client) InitIOPipes(session *ssh.Session) error {
 	stdin, err := session.StdinPipe()
 	if err != nil {
