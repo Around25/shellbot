@@ -1,19 +1,19 @@
 package ssh
 
 import (
+	"bufio"
+	"fmt"
+	"github.com/Around25/shellbot/logger"
 	"io"
 	"os"
-	"fmt"
 	"path"
-	"bufio"
-	"strconv"
-	"github.com/Around25/shellbot/logger"
 	"path/filepath"
+	"strconv"
 )
 
 /**
-	Download a file or directory from the server
- */
+Download a file or directory from the server
+*/
 func (client *Client) Download(srcPath, destination string) error {
 	// start SSH connection
 	session, err := client.StartSession(false, false)
@@ -47,7 +47,8 @@ func (client *Client) Download(srcPath, destination string) error {
 	if err = scpReceive(source, dest, destination); err != nil {
 		return err
 	}
-	dest.Close(); dest = nil
+	dest.Close()
+	dest = nil
 
 	// wait until the command has finished and see if there are any errors
 	err = session.Wait()
@@ -60,8 +61,8 @@ func (client *Client) Download(srcPath, destination string) error {
 }
 
 /**
-	Read the next message from the scp stream
- */
+Read the next message from the scp stream
+*/
 func readHeader(source *bufio.Reader) (string, error) {
 	header, err := source.ReadString('\n')
 	if err == io.EOF {
@@ -74,8 +75,8 @@ func readHeader(source *bufio.Reader) (string, error) {
 }
 
 /**
-	Extract file info from the header
- */
+Extract file info from the header
+*/
 func readFileInfo(header string) (os.FileMode, int64, string, error) {
 	var mode os.FileMode
 	var size int64
@@ -90,24 +91,24 @@ func readFileInfo(header string) (os.FileMode, int64, string, error) {
 }
 
 /**
-	Receive all SCP data from the source and save it in the destination
-	Send confirmation messages using the reply stream
- */
+Receive all SCP data from the source and save it in the destination
+Send confirmation messages using the reply stream
+*/
 func scpReceive(source *bufio.Reader, reply io.Writer, dest string) error {
 	// confirm communication chanel
-	fmt.Fprint(reply, "\x00");
+	fmt.Fprint(reply, "\x00")
 
 	// start processing messages from the server
 	if err := scpProcessMessage(source, reply, dest); err != nil {
-		return err;
+		return err
 	}
 
 	return nil
 }
 
 /**
-	Receive a single file from the server
- */
+Receive a single file from the server
+*/
 func scpReceiveFile(header string, source *bufio.Reader, reply io.Writer, dest string) error {
 	// read the file info from the message header
 	mode, size, name, err := readFileInfo(header)
@@ -118,14 +119,14 @@ func scpReceiveFile(header string, source *bufio.Reader, reply io.Writer, dest s
 	// confirm receiving the properties of the file
 	fmt.Fprint(reply, "\x00")
 	var filename string
-	if filepath.Ext(dest) != "" && dest[len(dest) - 1] != byte(filepath.Separator) {
+	if filepath.Ext(dest) != "" && dest[len(dest)-1] != byte(filepath.Separator) {
 		filename = dest
 	} else {
 		filename = path.Join(dest, name)
 	}
 
 	// open the file in which to save the data
-	f, err := os.OpenFile(filename, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, mode)
+	f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, mode)
 	if err != nil {
 		return err
 	}
@@ -149,8 +150,8 @@ func scpReceiveFile(header string, source *bufio.Reader, reply io.Writer, dest s
 }
 
 /**
-	Process a directory scp message and create it in the destination
- */
+Process a directory scp message and create it in the destination
+*/
 func scpReceiveDir(header string, source *bufio.Reader, reply io.Writer, dest string) (string, error) {
 	// read the folder details from the message header
 	mode, _, name, err := readFileInfo(header)
@@ -176,8 +177,8 @@ func scpReceiveDir(header string, source *bufio.Reader, reply io.Writer, dest st
 }
 
 /**
-	Process SCP messages one at a time until the stream is over
- */
+Process SCP messages one at a time until the stream is over
+*/
 func scpProcessMessage(source *bufio.Reader, reply io.Writer, dest string) error {
 	header, err := readHeader(source)
 	if err != nil {
@@ -188,7 +189,7 @@ func scpProcessMessage(source *bufio.Reader, reply io.Writer, dest string) error
 		return nil // nothing left to receive
 	}
 
-	switch (header[0]) {
+	switch header[0] {
 	default:
 		// handle bad data received
 		return fmt.Errorf("Invalid message received '%s'", header)
@@ -197,13 +198,13 @@ func scpProcessMessage(source *bufio.Reader, reply io.Writer, dest string) error
 		return fmt.Errorf("%s", header[1:len(header)])
 	case 'C':
 		// receive a file and save it in the given folder
-		err = scpReceiveFile(header, source, reply, dest);
+		err = scpReceiveFile(header, source, reply, dest)
 		if err != nil {
 			return err
 		}
 	case 'D':
 		// receive a directory name and create it
-		dest, err = scpReceiveDir(header, source, reply, dest);
+		dest, err = scpReceiveDir(header, source, reply, dest)
 		if err != nil {
 			return err
 		}
@@ -212,7 +213,7 @@ func scpProcessMessage(source *bufio.Reader, reply io.Writer, dest string) error
 		dest = path.Dir(dest)
 		fmt.Fprint(reply, "\x00")
 	case 'T':
-	// ignore time messages
+		// ignore time messages
 	}
 	// continue processing messages until the buffer is empty
 	return scpProcessMessage(source, reply, dest)

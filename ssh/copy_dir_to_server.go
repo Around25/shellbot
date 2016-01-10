@@ -8,8 +8,8 @@ import (
 )
 
 /**
-	Copy a directory from the source to the destination
- */
+Copy a directory from the source to the destination
+*/
 func (client *Client) CopyDir(srcPath, destination string) error {
 	// start SSH connection
 	session, err := client.StartSession(false, false)
@@ -38,7 +38,8 @@ func (client *Client) CopyDir(srcPath, destination string) error {
 	if err = transferDir(srcPath, dest); err != nil {
 		return err
 	}
-	dest.Close(); dest = nil
+	dest.Close()
+	dest = nil
 
 	// wait until the command has finished and see if there are any errors
 	err = session.Wait()
@@ -50,8 +51,8 @@ func (client *Client) CopyDir(srcPath, destination string) error {
 }
 
 /**
-	transferDir first creates the folder on the server and them transfers all it's contents on the server
- */
+transferDir first creates the folder on the server and them transfers all it's contents on the server
+*/
 func transferDir(srcPath string, dest io.Writer) error {
 	// open the provided source directory
 	handle, err := os.Open(srcPath)
@@ -70,7 +71,8 @@ func transferDir(srcPath string, dest io.Writer) error {
 	}
 	name := stats.Name()
 	mode := stats.Mode().Perm()
-	handle.Close(); handle = nil
+	handle.Close()
+	handle = nil
 
 	// transfer the current folder first
 	err = scpTransferDir(name, mode, dest, func() error {
@@ -83,8 +85,8 @@ func transferDir(srcPath string, dest io.Writer) error {
 }
 
 /**
-	Transfer directory recursively to the destination
- */
+Transfer directory recursively to the destination
+*/
 func transferDirContents(srcPath string, dest io.Writer) error {
 	// open the provided source directory
 	handle, err := os.Open(srcPath)
@@ -119,8 +121,8 @@ func transferDirContents(srcPath string, dest io.Writer) error {
 }
 
 /**
-	scpTransferDir implements the SCP protocol for creating a directory at the destination
- */
+scpTransferDir implements the SCP protocol for creating a directory at the destination
+*/
 func scpTransferDir(path string, mode os.FileMode, dest io.Writer, processFiles func() error) error {
 
 	// send the location where a folder should be created

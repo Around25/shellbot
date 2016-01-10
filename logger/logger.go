@@ -1,8 +1,8 @@
 package logger
 
 import (
-	"log"
 	"github.com/fatih/color"
+	"log"
 	"os"
 )
 

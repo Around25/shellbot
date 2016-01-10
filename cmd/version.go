@@ -10,7 +10,7 @@ import (
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Display the current version of the tool",
-	Long: `Display the current version of the tool.`,
+	Long:  `Display the current version of the tool.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("0.1.0")
 	},

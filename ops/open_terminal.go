@@ -12,7 +12,7 @@ func OpenTerminalToServer(name string, appConfig *Config) error {
 	if err != nil {
 		return err
 	}
-	uri := server["uri"];
+	uri := server["uri"]
 	key, _ := homedir.Expand(server["key"])
 
 	if uri == "" {

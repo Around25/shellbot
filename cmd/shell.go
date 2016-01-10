@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/Around25/shellbot/ops"
 	"github.com/Around25/shellbot/logger"
+	"github.com/Around25/shellbot/ops"
 
 	"github.com/spf13/cobra"
 )
@@ -11,7 +11,7 @@ import (
 var shellCmd = &cobra.Command{
 	Use:   "shell",
 	Short: "Connect to a single server through ssh",
-	Long: `Using shell you can connect open a ssh session to a server.`,
+	Long:  `Using shell you can connect open a ssh session to a server.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var name string
 		if len(args) == 0 {
@@ -22,7 +22,7 @@ var shellCmd = &cobra.Command{
 		name = args[0]
 		err := ops.OpenTerminalToServer(name, ops.NewConfig(AppConfig))
 		if err != nil {
-			logger.Fatal(err);
+			logger.Fatal(err)
 		}
 	},
 }

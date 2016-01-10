@@ -1,4 +1,5 @@
 package ops
+
 import (
 	"fmt"
 	"github.com/Around25/shellbot/ssh"
@@ -6,8 +7,8 @@ import (
 )
 
 /**
-	Provision an environment based on the loaded configuration file
- */
+Provision an environment based on the loaded configuration file
+*/
 func ProvisionEnvironment(env string, config *Config) error {
 	groups := config.GetGroupsForEnv(env)
 	variables := config.GetVariablesForEnv(env)
@@ -22,9 +23,9 @@ func ProvisionEnvironment(env string, config *Config) error {
 }
 
 /**
-	Provision a specific group from the config using the given variables
- */
-func ProvisionGroup(group string, variables map[string] string, config *Config) error {
+Provision a specific group from the config using the given variables
+*/
+func ProvisionGroup(group string, variables map[string]string, config *Config) error {
 	servers := config.GetServersForGroup(group)
 	tasks := config.GetTasksForGroup(group)
 	checks := config.GetChecksForGroup(group)
@@ -39,15 +40,15 @@ func ProvisionGroup(group string, variables map[string] string, config *Config) 
 }
 
 /**
-	Provision a single server with the list of tasks and variables
- */
-func ProvisionServer(name string, tasks []map[string] string, checks []map[string] string, variables map[string] string, config *Config) error {
+Provision a single server with the list of tasks and variables
+*/
+func ProvisionServer(name string, tasks []map[string]string, checks []map[string]string, variables map[string]string, config *Config) error {
 	// load connection data from the configuration file
 	server, err := config.GetServer(name)
 	if err != nil {
 		return err
 	}
-	uri := server["uri"];
+	uri := server["uri"]
 	key, _ := homedir.Expand(server["key"])
 
 	if uri == "" {
@@ -76,9 +77,9 @@ func ProvisionServer(name string, tasks []map[string] string, checks []map[strin
 }
 
 /**
-	Execute a list of tasks on the connected server based on the provided config and with the list of variables as the current context
- */
-func ExecuteTasksOnServer(client *ssh.Client, tasks []map[string] string, variables map[string] string, config *Config) error {
+Execute a list of tasks on the connected server based on the provided config and with the list of variables as the current context
+*/
+func ExecuteTasksOnServer(client *ssh.Client, tasks []map[string]string, variables map[string]string, config *Config) error {
 	for _, task := range tasks {
 		for taskType, taskValue := range task {
 			taskValue = ExpandVariables(taskValue, variables)
@@ -93,8 +94,8 @@ func ExecuteTasksOnServer(client *ssh.Client, tasks []map[string] string, variab
 }
 
 /**
-	Execute the current task on the server
- */
+Execute the current task on the server
+*/
 func ExecuteTaskOnServer(client *ssh.Client, taskType string, taskValue string, config *Config) (string, error) {
 	switch taskType {
 	case "run":
@@ -112,8 +113,8 @@ func ExecuteTaskOnServer(client *ssh.Client, taskType string, taskValue string, 
 }
 
 /**
-	Execute a task group on the server
- */
+Execute a task group on the server
+*/
 func ExecuteTaskGroupOnServer(client *ssh.Client, group string, config *Config) (string, error) {
 	tasks := config.GetTasksForTaskGroup(group)
 	err := ExecuteTasksOnServer(client, tasks, nil, config)

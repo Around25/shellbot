@@ -3,7 +3,7 @@ all: build install
 
 # build the application to check for any compilation errors
 build:
-	go fmt
+	gofmt -w ./
 	go vet
 	go build ./...
 

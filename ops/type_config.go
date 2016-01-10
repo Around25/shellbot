@@ -1,8 +1,8 @@
 package ops
 
 import (
-	"github.com/spf13/viper"
 	"fmt"
+	"github.com/spf13/viper"
 	"os"
 )
 
@@ -12,18 +12,18 @@ type Config struct {
 }
 
 /**
-	Create a new Config object based on a viper config
- */
+Create a new Config object based on a viper config
+*/
 func NewConfig(config *viper.Viper) *Config {
-	return &Config {
+	return &Config{
 		config: config,
 	}
 }
 
 /**
-	Retrieve the connection details for a specific server
- */
-func (config *Config) GetServer(name string) (map[string] string, error) {
+Retrieve the connection details for a specific server
+*/
+func (config *Config) GetServer(name string) (map[string]string, error) {
 	server := config.config.GetStringMapString("servers." + name)
 	if server == nil {
 		return nil, fmt.Errorf("Server is not defined")
@@ -32,16 +32,16 @@ func (config *Config) GetServer(name string) (map[string] string, error) {
 }
 
 /**
-	Retrieve the list of groups for the specified environment
- */
+Retrieve the list of groups for the specified environment
+*/
 func (config *Config) GetGroupsForEnv(env string) []string {
 	return config.config.GetStringSlice("environments." + env + ".groups")
 }
 
 /**
-	Retrieve the list of variables for the specified environment from the config file and from the OS
- */
-func (config *Config) GetVariablesForEnv(env string) map[string] string {
+Retrieve the list of variables for the specified environment from the config file and from the OS
+*/
+func (config *Config) GetVariablesForEnv(env string) map[string]string {
 	variables := config.config.GetStringMapString("environments." + env + ".variables")
 	for key, _ := range variables {
 		if os.Getenv(key) != "" {
@@ -52,16 +52,16 @@ func (config *Config) GetVariablesForEnv(env string) map[string] string {
 }
 
 /**
-	Retrieve the list of servers contained in a group
- */
+Retrieve the list of servers contained in a group
+*/
 func (config *Config) GetServersForGroup(group string) []string {
 	return config.config.GetStringSlice("groups." + group + ".servers")
 }
 
 /**
-	Retrieve the list of tasks that should be executed for a group
- */
-func (config *Config) GetTasksForGroup(group string) []map[string] string {
+Retrieve the list of tasks that should be executed for a group
+*/
+func (config *Config) GetTasksForGroup(group string) []map[string]string {
 	// retrieve the list from the config file
 	tasks := config.config.Get("groups." + group + ".tasks")
 
@@ -70,9 +70,9 @@ func (config *Config) GetTasksForGroup(group string) []map[string] string {
 }
 
 /**
-	Retrieve the list of tasks included in a task group
- */
-func (config *Config) GetTasksForTaskGroup(taskGroup string) []map[string] string {
+Retrieve the list of tasks included in a task group
+*/
+func (config *Config) GetTasksForTaskGroup(taskGroup string) []map[string]string {
 	// retrieve the list from the config file
 	tasks := config.config.Get("tasks." + taskGroup)
 
@@ -81,8 +81,8 @@ func (config *Config) GetTasksForTaskGroup(taskGroup string) []map[string] strin
 }
 
 /**
-	Retrieve the list of checks for a specific group
- */
+Retrieve the list of checks for a specific group
+*/
 func (config *Config) GetChecksForGroup(group string) []map[string]string {
 	checks := config.config.Get("groups." + group + ".checks")
 
@@ -91,14 +91,14 @@ func (config *Config) GetChecksForGroup(group string) []map[string]string {
 }
 
 /**
-	Convert an interface from Viper to an []map[string] string type
- */
-func convertFromInterface(rawData interface{}) []map[string] string {
+Convert an interface from Viper to an []map[string] string type
+*/
+func convertFromInterface(rawData interface{}) []map[string]string {
 	data := rawData.([]interface{})
-	result := make([]map[string] string, len(data))
+	result := make([]map[string]string, len(data))
 	for k, v := range data {
-		val := v.(map[interface{}] interface{})
-		item := make(map[string] string, len(val))
+		val := v.(map[interface{}]interface{})
+		item := make(map[string]string, len(val))
 		for t, d := range val {
 			item[t.(string)] = d.(string)
 		}

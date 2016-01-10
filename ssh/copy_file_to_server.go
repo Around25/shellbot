@@ -9,8 +9,8 @@ import (
 )
 
 /**
-	Copy a file or a directory from the source to the remote destination
- */
+Copy a file or a directory from the source to the remote destination
+*/
 func (client *Client) Copy(srcPath, destPath string) error {
 	handle, err := os.Open(srcPath)
 	if err != nil {
@@ -31,8 +31,8 @@ func (client *Client) Copy(srcPath, destPath string) error {
 }
 
 /**
-	Copy a file from the source to the destination
- */
+Copy a file from the source to the destination
+*/
 func (client *Client) CopyFile(srcPath, destination string) error {
 	// start SSH connection
 	session, err := client.StartSession(false, false)
@@ -43,8 +43,8 @@ func (client *Client) CopyFile(srcPath, destination string) error {
 
 	// open an input stream to the server
 	dest, _ := session.StdinPipe()
-	defer func(){
-		if dest!=nil {
+	defer func() {
+		if dest != nil {
 			dest.Close()
 		}
 	}()
@@ -64,7 +64,8 @@ func (client *Client) CopyFile(srcPath, destination string) error {
 	if err = transferFile(srcPath, destPath, dest); err != nil {
 		return err
 	}
-	dest.Close(); dest = nil
+	dest.Close()
+	dest = nil
 
 	// wait until the command has finished and see if there are any errors
 	err = session.Wait()
@@ -76,8 +77,8 @@ func (client *Client) CopyFile(srcPath, destination string) error {
 }
 
 /**
-	Open a file and transfer it to the destination
- */
+Open a file and transfer it to the destination
+*/
 func transferFile(srcPath string, destPath string, dest io.Writer) error {
 	// Open file for reading
 	src, err := os.Open(srcPath)
@@ -103,8 +104,8 @@ func transferFile(srcPath string, destPath string, dest io.Writer) error {
 }
 
 /**
-	scpTransferFile sends the contents of the source stream to the destination stream using SCP protocol
- */
+scpTransferFile sends the contents of the source stream to the destination stream using SCP protocol
+*/
 func scpTransferFile(path string, mode os.FileMode, size int64, src io.Reader, dest io.Writer) error {
 
 	// send the location where it should be saved, along with the size and mode

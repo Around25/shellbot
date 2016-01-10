@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/Around25/shellbot/ops"
 	"github.com/Around25/shellbot/logger"
+	"github.com/Around25/shellbot/ops"
 
 	"github.com/spf13/cobra"
 )
@@ -11,7 +11,7 @@ import (
 var setupCmd = &cobra.Command{
 	Use:   "setup",
 	Short: "Execute all the tasks associated with each group of servers",
-	Long: `Execute all the tasks associated with each group of servers`,
+	Long:  `Execute all the tasks associated with each group of servers`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var name string
 		if len(args) == 0 {

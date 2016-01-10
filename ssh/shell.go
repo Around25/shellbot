@@ -5,9 +5,9 @@ import (
 )
 
 /**
-    Shell creates a shell connection to the host and allows the user to run commands on the server
-    @Todo Fix issue using arrow keys in a shell connection
- */
+  Shell creates a shell connection to the host and allows the user to run commands on the server
+  @Todo Fix issue using arrow keys in a shell connection
+*/
 func (client *Client) Shell() error {
 	session, err := client.StartSession(true, true)
 	if err != nil {
